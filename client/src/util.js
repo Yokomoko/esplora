@@ -45,7 +45,7 @@ export const tryUnconfidentialAddress = addr => {
 }
 
 export const makeAddressQR = addr => {
-  let qrstr = `bitcoin:${addr}`
+  let qrstr = `groestlcoin:${addr}`
   return qrcode.toDataURL(
     // upper-case bech32 addresses to enable the compact qr encoding mode
     reBech32.test(addr) ? qrstr.toUpperCase() : qrstr
