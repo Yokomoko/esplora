@@ -34,17 +34,17 @@ test_docker_build_image:
     - tags
     - master
   script:
-    - docker pull blockstream/esplora-base:latest
-    - docker pull blockstream/esplora:latest
+    - docker pull Groestlcoin/esplora-base:latest
+    - docker pull Groestlcoin/esplora:latest
     - docker build
         --network=host
-        --cache-from blockstream/esplora-base:latest
+        --cache-from Groestlcoin/esplora-base:latest
         -f Dockerfile.deps
         -t esplora-base .
     - docker build
         --network=host
         --build-arg FOOT_HTML='<!-- '"$CI_COMMIT_SHA"'-->'
-        --cache-from blockstream/esplora:latest
+        --cache-from Groestlcoin/esplora:latest
         -t esplora .
     - docker rmi esplora-base || true
     - docker rmi esplora || true
@@ -61,25 +61,25 @@ build:
     - master@greenaddress/esplora
   script:
     - docker pull debian:buster || true
-    - docker pull blockstream/esplora-base:latest || true
-    - docker build --network=host --cache-from blockstream/esplora-base:latest -t blockstream/esplora-base:$CI_COMMIT_REF_SLUG -t blockstream/esplora-base:latest -f Dockerfile.deps .
-    - docker push blockstream/esplora-base:latest
-    - esplora_base_sha=$(docker inspect --format='{{index .RepoDigests 0}}' blockstream/esplora-base:$CI_COMMIT_REF_SLUG)
-    - sed -i "s~blockstream/esplora-base:latest~${esplora_base_sha}~g" Dockerfile
-    - curl "https://hub.docker.com/v2/repositories/blockstream/esplora/tags/" | grep -q "$CI_COMMIT_SHA" || (
-        docker pull blockstream/esplora:latest
+    - docker pull Groestlcoin/esplora-base:latest || true
+    - docker build --network=host --cache-from Groestlcoin/esplora-base:latest -t Groestlcoin/esplora-base:$CI_COMMIT_REF_SLUG -t Groestlcoin/esplora-base:latest -f Dockerfile.deps .
+    - docker push Groestlcoin/esplora-base:latest
+    - esplora_base_sha=$(docker inspect --format='{{index .RepoDigests 0}}' Groestlcoin/esplora-base:$CI_COMMIT_REF_SLUG)
+    - sed -i "s~Groestlcoin/esplora-base:latest~${esplora_base_sha}~g" Dockerfile
+    - curl "https://hub.docker.com/v2/repositories/Groestlcoin/esplora/tags/" | grep -q "$CI_COMMIT_SHA" || (
+        docker pull Groestlcoin/esplora:latest
         && docker build
           --network=host
           --build-arg FOOT_HTML='<!-- '"$CI_COMMIT_SHA"' -->'
-          --cache-from blockstream/esplora:latest
-          -t blockstream/esplora:latest .
-        && docker push blockstream/esplora:latest
+          --cache-from Groestlcoin/esplora:latest
+          -t Groestlcoin/esplora:latest .
+        && docker push Groestlcoin/esplora:latest
         && docker build
           --network=host
           --build-arg FOOT_HTML='<!-- '"$CI_COMMIT_SHA"' -->'
-          --cache-from blockstream/esplora:latest
-          -t blockstream/esplora:$CI_COMMIT_SHA .
-        && docker push blockstream/esplora:$CI_COMMIT_SHA)
+          --cache-from Groestlcoin/esplora:latest
+          -t Groestlcoin/esplora:$CI_COMMIT_SHA .
+        && docker push Groestlcoin/esplora:$CI_COMMIT_SHA)
 
 plan:
   except:
@@ -169,7 +169,7 @@ plan_bitcoin_mainnet:
     - (cd terraform && terraform init -input=false &&
        terraform workspace select bitcoin-mainnet &&
        terraform plan
-        -var "docker_tag_explorer=blockstream/esplora:$CI_COMMIT_SHA"
+        -var "docker_tag_explorer=Groestlcoin/esplora:$CI_COMMIT_SHA"
         -var "cluster_size=$NODE_CLUSTER_SIZE"
         -var "instance_type=$NODE_INSTANCE_TYPE"
         -var "preemptible_instance_type=$NODE_PREEMPTIBLE_INSTANCE_TYPE"
@@ -191,13 +191,13 @@ deploy_bitcoin_mainnet:
   only:
     - /^bitcoin_mainnet.*/
   script:
-    - docker pull blockstream/esplora:$CI_COMMIT_SHA
-    - docker tag blockstream/esplora:$CI_COMMIT_SHA blockstream/esplora:builder-bitcoin-mainnet
-    - docker push blockstream/esplora:builder-bitcoin-mainnet
+    - docker pull Groestlcoin/esplora:$CI_COMMIT_SHA
+    - docker tag Groestlcoin/esplora:$CI_COMMIT_SHA Groestlcoin/esplora:builder-bitcoin-mainnet
+    - docker push Groestlcoin/esplora:builder-bitcoin-mainnet
     - (cd terraform && terraform init -input=false &&
        terraform workspace select bitcoin-mainnet &&
        terraform apply
-        -var "docker_tag_explorer=blockstream/esplora:$CI_COMMIT_SHA"
+        -var "docker_tag_explorer=Groestlcoin/esplora:$CI_COMMIT_SHA"
         -var "cluster_size=$NODE_CLUSTER_SIZE"
         -var "instance_type=$NODE_INSTANCE_TYPE"
         -var "preemptible_instance_type=$NODE_PREEMPTIBLE_INSTANCE_TYPE"
@@ -218,7 +218,7 @@ plan_bitcoin_testnet:
     - (cd terraform && terraform init -input=false &&
        terraform workspace select bitcoin-testnet &&
        terraform plan
-        -var "docker_tag_explorer=blockstream/esplora:$CI_COMMIT_SHA"
+        -var "docker_tag_explorer=Groestlcoin/esplora:$CI_COMMIT_SHA"
         -var "cluster_size=$NODE_CLUSTER_SIZE"
         -var "instance_type=$NODE_INSTANCE_TYPE"
         -var "preemptible_instance_type=$NODE_PREEMPTIBLE_INSTANCE_TYPE"
@@ -240,13 +240,13 @@ deploy_bitcoin_testnet:
   only:
     - /^bitcoin_testnet.*/
   script:
-    - docker pull blockstream/esplora:$CI_COMMIT_SHA
-    - docker tag blockstream/esplora:$CI_COMMIT_SHA blockstream/esplora:builder-bitcoin-testnet
-    - docker push blockstream/esplora:builder-bitcoin-testnet
+    - docker pull Groestlcoin/esplora:$CI_COMMIT_SHA
+    - docker tag Groestlcoin/esplora:$CI_COMMIT_SHA Groestlcoin/esplora:builder-bitcoin-testnet
+    - docker push Groestlcoin/esplora:builder-bitcoin-testnet
     - (cd terraform && terraform init -input=false &&
        terraform workspace select bitcoin-testnet &&
        terraform apply
-        -var "docker_tag_explorer=blockstream/esplora:$CI_COMMIT_SHA"
+        -var "docker_tag_explorer=Groestlcoin/esplora:$CI_COMMIT_SHA"
         -var "cluster_size=$NODE_CLUSTER_SIZE"
         -var "instance_type=$NODE_INSTANCE_TYPE"
         -var "preemptible_instance_type=$NODE_PREEMPTIBLE_INSTANCE_TYPE"
@@ -267,7 +267,7 @@ plan_liquid_mainnet:
     - (cd terraform && terraform init -input=false &&
        terraform workspace select liquid-mainnet &&
        terraform plan
-        -var "docker_tag_explorer=blockstream/esplora:$CI_COMMIT_SHA"
+        -var "docker_tag_explorer=Groestlcoin/esplora:$CI_COMMIT_SHA"
         -var "cluster_size=$NODE_CLUSTER_SIZE"
         -var "instance_type=$NODE_INSTANCE_TYPE"
         -var "preemptible_instance_type=$NODE_PREEMPTIBLE_INSTANCE_TYPE"
@@ -289,13 +289,13 @@ deploy_liquid_mainnet:
   only:
     - /^liquid_mainnet.*/
   script:
-    - docker pull blockstream/esplora:$CI_COMMIT_SHA
-    - docker tag blockstream/esplora:$CI_COMMIT_SHA blockstream/esplora:builder-liquid-mainnet
-    - docker push blockstream/esplora:builder-liquid-mainnet
+    - docker pull Groestlcoin/esplora:$CI_COMMIT_SHA
+    - docker tag Groestlcoin/esplora:$CI_COMMIT_SHA Groestlcoin/esplora:builder-liquid-mainnet
+    - docker push Groestlcoin/esplora:builder-liquid-mainnet
     - (cd terraform && terraform init -input=false &&
        terraform workspace select liquid-mainnet &&
        terraform apply
-        -var "docker_tag_explorer=blockstream/esplora:$CI_COMMIT_SHA"
+        -var "docker_tag_explorer=Groestlcoin/esplora:$CI_COMMIT_SHA"
         -var "cluster_size=$NODE_CLUSTER_SIZE"
         -var "instance_type=$NODE_INSTANCE_TYPE"
         -var "preemptible_instance_type=$NODE_PREEMPTIBLE_INSTANCE_TYPE"

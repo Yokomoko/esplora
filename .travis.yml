@@ -3,5 +3,5 @@ services:
     - docker
 
 script:
-  - docker build -t blockstream/esplora-base -f Dockerfile.deps .
+  - docker build -t Groestlcoin/esplora-base -f Dockerfile.deps .
   - docker build .

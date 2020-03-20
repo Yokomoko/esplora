@@ -1,8 +1,8 @@
 # Groestlcoin Esplora Block Explorer
 
 [![build status](https://api.travis-ci.org/Blockstream/esplora.svg)](https://travis-ci.org/Blockstream/esplora)
-[![docker release](https://img.shields.io/docker/pulls/blockstream/esplora.svg)](https://hub.docker.com/r/blockstream/esplora)
-[![MIT license](https://img.shields.io/github/license/blockstream/esplora.svg)](https://github.com/blockstream/esplora/blob/master/LICENSE)
+[![docker release](https://img.shields.io/docker/pulls/Groestlcoin/esplora.svg)](https://hub.docker.com/r/Groestlcoin/esplora)
+[![MIT license](https://img.shields.io/github/license/Groestlcoin/esplora.svg)](https://github.com/Groestlcoin/esplora/blob/master/LICENSE)
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=bitcoin-explorers)
 
@@ -166,9 +166,9 @@ docker run -p 50001:50001 -p 8084:80 \
 ## Build new esplora-base
 
 ```
-docker build -t blockstream/esplora-base:latest -f Dockerfile.deps .
-docker push blockstream/esplora-base:latest
-docker inspect --format='{{index .RepoDigests 0}}' blockstream/esplora-base
+docker build -t Groestlcoin/esplora-base:latest -f Dockerfile.deps .
+docker push Groestlcoin/esplora-base:latest
+docker inspect --format='{{index .RepoDigests 0}}' Groestlcoin/esplora-base
 ```
 
 ## Build new ci
