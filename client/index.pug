@@ -12,6 +12,7 @@ doctype html
 head
   meta(charset='utf-8')
   title= pageTitle
+  meta(property='og:title', content=process.env.OG_TITLE || process.env.SITE_TITLE || 'Groestlcoin Explora')
   meta(name='description', content=process.env.SITE_DESC || 'Groestlcoin Esplora Block Explorer')
 
   if canon_url
@@ -29,7 +30,7 @@ head
 
   if process.env.CANONICAL_URL
     //- open search requires the absolute URL of the explorer
-    link(rel='search', href=staticRoot+'opensearch.xml', type='application/opensearchdescription+xml', title=process.env.SITE_TITLE || 'Block Explorer')
+    link(rel='search', href=staticRoot+'opensearch.xml', type='application/opensearchdescription+xml', title=process.env.SITE_TITLE || 'Groestlcoin Esplora')
 
   != process.env.HEAD_HTML
 
