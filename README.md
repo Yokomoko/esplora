@@ -6,12 +6,12 @@
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=bitcoin-explorers)
 
-Block explorer web interface based on the [esplora-electrs](https://github.com/Blockstream/electrs) HTTP API.
+Block explorer web interface based on the [esplora-electrs-grs](https://github.com/Groestlcoin/electrs) HTTP API (see blockstream branch).
 
 Written as a single-page app in a reactive and functional style using
 [rxjs](https://github.com/ReactiveX/rxjs) and [cycle.js](https://cycle.js.org/).
 
-See live at [Blockstream.info](https://blockstream.info/).
+See live at [Blockstream.info](https://explora.groestlcoin.org/).
 
 API documentation [is available here](API.md).
 
@@ -48,7 +48,7 @@ Join the translation efforts on [Transifex](https://transifex.com/blockstream/es
 To start a development server with live babel/browserify transpilation, run:
 
 ```bash
-$ git clone https://github.com/Blockstream/esplora && cd esplora
+$ git clone https://github.com/Groestlcoin/esplora && cd esplora
 $ npm install
 $ export API_URL=http://localhost:3000/ # or https://blockstream.info/api/ if you don't have a local API server
 # (see more config options below)
@@ -135,7 +135,7 @@ All GUI options, plus:
 docker build -t esplora .
 ```
 
-## How to run the explorer for Bitcoin mainnet
+## How to run the explorer for Groestlcoin mainnet
 
 ```
 docker run -p 50001:50001 -p 8080:80 \
@@ -153,7 +153,7 @@ docker run -p 50001:50001 -p 8082:80 \
            bash -c "/srv/explorer/run.sh liquid-mainnet explorer"
 ```
 
-## How to run the explorer for Bitcoin testnet3
+## How to run the explorer for Groestlcoin testnet3
 
 ```
 docker run -p 50001:50001 -p 8084:80 \
