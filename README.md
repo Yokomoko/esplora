@@ -1,4 +1,4 @@
-# Esplora Block Explorer
+# Groestlcoin Esplora Block Explorer
 
 [![build status](https://api.travis-ci.org/Blockstream/esplora.svg)](https://travis-ci.org/Blockstream/esplora)
 [![docker release](https://img.shields.io/docker/pulls/blockstream/esplora.svg)](https://hub.docker.com/r/blockstream/esplora)
@@ -90,8 +90,8 @@ All options are optional.
 - `API_URL` - URL for HTTP REST API (defaults to `/api`, change if the API is available elsewhere)
 - `CANONICAL_URL` - absolute base url for user interface (optional, only required for opensearch and canonical link tags)
 - `NATIVE_ASSET_LABEL` - the name of the network native asset (defaults to `GRS`)
-- `SITE_TITLE` - website title for `<title>` (defaults to `Block Explorer`)
-- `SITE_DESC` - meta description (defaults to `Esplora Block Explorer`)
+- `SITE_TITLE` - website title for `<title>` (defaults to `Groestlcoin Esplora`)
+- `SITE_DESC` - meta description (defaults to `Groestlcoin Esplora Block Explorer`)
 - `HOME_TITLE` - text for homepage title (defaults to `SITE_TITLE`)
 - `SITE_FOOTER` - text for page footer (defaults to `Powered by esplora`)
 - `HEAD_HTML` - custom html to inject at the end of `<head>`

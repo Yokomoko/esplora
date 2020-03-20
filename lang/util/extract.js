@@ -15,7 +15,7 @@ const jsStr = fs.readFileSync('/dev/stdin').toString()
 const reLangStr = /^[A-Z].* /
 
 // Except for these, which match the pattern but don't need translations
-const langStrBlacklist = ['Block Explorer', 'Request has been terminated', 'Toggle navigation']
+const langStrBlacklist = ['Groestlcoin Esplora', 'Block Explorer', 'Request has been terminated', 'Toggle navigation']
 
 traverse(jsAst, {
   TemplateLiteral(path) {

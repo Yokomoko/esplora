@@ -1,6 +1,6 @@
 doctype html
 
-- baseTitle = process.env.SITE_TITLE || 'Block Explorer'
+- baseTitle = process.env.SITE_TITLE || 'Groestlcoin Explora'
 - staticRoot = process.env.STATIC_ROOT || ''
 - pageTitle = prerender_title ? `${prerender_title} · ${baseTitle}` : baseTitle
 - bodyClass = theme ? `theme-${theme}` : ''
@@ -12,8 +12,7 @@ doctype html
 head
   meta(charset='utf-8')
   title= pageTitle
-  meta(property='og:title', content=process.env.OG_TITLE || process.env.SITE_TITLE || 'Block explorer')
-  meta(name='description', content=process.env.SITE_DESC || 'Esplora Block Explorer')
+  meta(name='description', content=process.env.SITE_DESC || 'Groestlcoin Esplora Block Explorer')
 
   if canon_url
     link(rel="canonical", href=canon_url)
