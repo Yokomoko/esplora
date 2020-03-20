@@ -1,5 +1,5 @@
 import qs from 'querystring'
-import bs58check from 'bs58check'
+import bs58grscheck from 'bs58grscheck'
 import qrcode from 'qrcode'
 import debug from 'debug'
 import assert from 'assert'
@@ -36,9 +36,9 @@ export const isNativeOut = vout => (!vout.asset && !vout.assetcommitment) || vou
 // Try removing blinding key from confidential address and return in standard address encoding
 export const tryUnconfidentialAddress = addr => {
   try {
-    const bytes = bs58check.decode(addr)
+    const bytes = bs58grscheck.decode(addr)
     assert(bytes.length == 55 && bytes[0] == BLIND_PREFIX)
-    return bs58check.encode(Buffer.concat([bytes.slice(1, 2), bytes.slice(-20)]))
+    return bs58grscheck.encode(Buffer.concat([bytes.slice(1, 2), bytes.slice(-20)]))
   } catch (e) {
     return addr
   }
