@@ -19,7 +19,7 @@ export const parseHashes = str => (''+str).split(',').filter(isHash256)
 // Transaction helpers
 
 export const nativeAssetId    = process.env.NATIVE_ASSET_ID    || '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d'
-           , nativeAssetLabel = process.env.NATIVE_ASSET_LABEL || 'BTC'
+           , nativeAssetLabel = process.env.NATIVE_ASSET_LABEL || 'GRS'
 
 export const isAnyConfidential = tx => tx.vout.some(vout => vout.value == null)
 

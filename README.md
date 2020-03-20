@@ -89,7 +89,7 @@ All options are optional.
 - `STATIC_ROOT` - root for static assets (defaults to `BASE_HREF`, change to load static assets from a different server)
 - `API_URL` - URL for HTTP REST API (defaults to `/api`, change if the API is available elsewhere)
 - `CANONICAL_URL` - absolute base url for user interface (optional, only required for opensearch and canonical link tags)
-- `NATIVE_ASSET_LABEL` - the name of the network native asset (defaults to `BTC`)
+- `NATIVE_ASSET_LABEL` - the name of the network native asset (defaults to `GRS`)
 - `SITE_TITLE` - website title for `<title>` (defaults to `Block Explorer`)
 - `SITE_DESC` - meta description (defaults to `Esplora Block Explorer`)
 - `HOME_TITLE` - text for homepage title (defaults to `SITE_TITLE`)
