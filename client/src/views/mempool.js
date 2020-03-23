@@ -49,7 +49,7 @@ export default ({ t, mempool, feeEst, ...S }) => mempool && feeEst && layout(
           <div className="fee-estimates col-md-4 col-sm-6 text-center">
             <h4 className="mb-3">Fee rate estimates</h4>
             <table className="table table-sm">
-                <thead><tr><th>Target</th><th>sat/vB</th><th>Mempool depth</th></tr></thead>
+                <thead><tr><th>Target</th><th>gro/vB</th><th>Mempool depth</th></tr></thead>
                 { sortEst(feeEst).map(([ target, feerate ]) =>
                   <tr><td>{t`${target} blocks`}</td><td>{feerate.toFixed(2)}</td><td>{t`${formatVMB(getMempoolDepth(mempool.fee_histogram, feerate))} from tip`}</td></tr>
                 )}

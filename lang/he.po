@@ -76,7 +76,7 @@ msgstr ""
 "והפאנג'יבילות של ביטקוין עבור כולם."
 
 msgid ""
-"compared to bitcoind's suggested fee of %s sat/vB for confirmation within 2 "
+"compared to bitcoind's suggested fee of %s gro/vB for confirmation within 2 "
 "blocks"
 msgstr ""
 "בהשוואה לעמלה המומלצת של bitcoind של %s סטושי/בייט עבור אישור תוך 2 בלוקים"
@@ -352,7 +352,7 @@ msgstr "נוצל ע\"י"
 msgid "Spent by"
 msgstr "נוצל ע\"י"
 
-msgid "%s (%s sat/vB)"
+msgid "%s (%s gro/vB)"
 msgstr ""
 
 msgid "Status"

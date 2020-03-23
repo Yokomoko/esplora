@@ -172,8 +172,8 @@ Example output:
 }
 ```
 
-> In this example, there are transactions weighting a total of 102,131 vbytes that are paying more than 53 sat/vB,
-110,990 vbytes of transactions paying between 38 and 53 sat/vB, 138,976 vbytes paying between 34 and 38, etc.
+> In this example, there are transactions weighting a total of 102,131 vbytes that are paying more than 53 gro/vB,
+110,990 vbytes of transactions paying between 38 and 53 gro/vB, 138,976 vbytes paying between 34 and 38, etc.
 
 
 ### `GET /mempool/txids`
@@ -193,7 +193,7 @@ Each transaction object contains simplified overview data, with the following fi
 ### `GET /fee-estimates`
 
 Get an object where the key is the confirmation target (in number of blocks)
-and the value is the estimated feerate (in sat/vB).
+and the value is the estimated feerate (in gro/vB).
 
 The available confirmation targets are 2, 3, 4, 5, 6, 10, 20, 25, 144, 504 and 1008 blocks.
 
