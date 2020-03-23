@@ -27,7 +27,7 @@ Returns a merkle inclusion proof for the transaction.
 
 Currently matches the merkle proof format used by Electrum's
 [`blockchain.transaction.get_merkle`](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle).
-*Will eventually be changed to use bitcoind's `merkleblock` format instead.*
+*Will eventually be changed to use groestlcoind's `merkleblock` format instead.*
 
 ### `GET /tx/:txid/outspend/:vout`
 
@@ -180,7 +180,7 @@ Example output:
 
 Get the full list of txids in the mempool as an array.
 
-The order of the txids is arbitrary and does not match bitcoind's.
+The order of the txids is arbitrary and does not match groestlcoind's.
 
 ### `GET /mempool/recent`
 

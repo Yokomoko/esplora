@@ -76,10 +76,10 @@ msgstr ""
 "והפאנג'יבילות של ביטקוין עבור כולם."
 
 msgid ""
-"compared to bitcoind's suggested fee of %s gro/vB for confirmation within 2 "
+"compared to groestlcoind's suggested fee of %s gro/vB for confirmation within 2 "
 "blocks"
 msgstr ""
-"בהשוואה לעמלה המומלצת של bitcoind של %s סטושי/בייט עבור אישור תוך 2 בלוקים"
+"בהשוואה לעמלה המומלצת של groestlcoind של %s סטושי/בייט עבור אישור תוך 2 בלוקים"
 
 msgid "Confidential"
 msgstr "חסוי"

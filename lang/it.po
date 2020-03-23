@@ -76,7 +76,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"compared to bitcoind's suggested fee of %s gro/vB for confirmation within 2 "
+"compared to groestlcoind's suggested fee of %s gro/vB for confirmation within 2 "
 "blocks"
 msgstr ""
 

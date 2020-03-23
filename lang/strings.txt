@@ -22,7 +22,7 @@ Broadcast tx
 Cancel
 Coinbase
 CoinJoin transactions hide the link between inputs and outputs and improves Bitcoin's overall privacy and fungibility for everyone.
-compared to bitcoind's suggested fee of %s gro/vB for confirmation within 2 blocks
+compared to groestlcoind's suggested fee of %s gro/vB for confirmation within 2 blocks
 Confidential
 Confirmed
 Confirmed non-confidential tx count

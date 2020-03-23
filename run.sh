@@ -193,13 +193,13 @@ chmod +x /etc/service/${DAEMON}/run
 
 # Sync mempool contents from SYNC_SOURCE
 if [ -n "$SYNC_SOURCE" ]; then
-  # wait for bitcoind to fully sync up,
+  # wait for groestlcoind to fully sync up,
   if [ "${DAEMON}" == "liquid" ]; then
-    /srv/explorer/bitcoin/bin/bitcoind -conf=/data/.bitcoin.conf -datadir=/data/bitcoin -daemon
-    /srv/explorer/source/contrib/bitcoind-wait-sync.sh cli_bitcoin
+    /srv/explorer/bitcoin/bin/groestlcoind -conf=/data/.bitcoin.conf -datadir=/data/bitcoin -daemon
+    /srv/explorer/source/contrib/groestlcoind-wait-sync.sh cli_bitcoin
   fi
   /srv/explorer/$DAEMON/bin/${DAEMON}d -conf=/data/.$DAEMON.conf -datadir=/data/$DAEMON -daemon
-  /srv/explorer/source/contrib/bitcoind-wait-sync.sh cli
+  /srv/explorer/source/contrib/groestlcoind-wait-sync.sh cli
   # stop it,
   cli stop
   if [ "${DAEMON}" == "liquid" ]; then
