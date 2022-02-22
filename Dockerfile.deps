@@ -19,24 +19,14 @@ RUN curl -sL -o bitcoin.tar.gz https://bitcoincore.org/bin/bitcoin-core-0.19.1/b
  && ln -s /srv/explorer/bitcoin-0.19.1 /srv/explorer/bitcoin \
  && rm bitcoin.tar.gz
 
-ENV SHA256SUM_ELEMENTS=6ab9dfd9c8818aa2d6789539eeaa6914692b5852fbb2fba603f3077a2bb5d9a0
-RUN curl -sL -o elements.tar.gz https://github.com/ElementsProject/elements/releases/download/elements-0.18.1.5/elements-0.18.1.5-x86_64-linux-gnu.tar.gz \
- && echo "${SHA256SUM_ELEMENTS}  elements.tar.gz" | sha256sum --check \
- && tar xzf elements.tar.gz -C /srv/explorer \
- && ln -s /srv/explorer/elements-0.18.1.5 /srv/explorer/liquid \
- && mv /srv/explorer/liquid/bin/{elementsd,liquidd} \
- && mv /srv/explorer/liquid/bin/{elements-cli,liquid-cli} \
- && rm elements.tar.gz
-
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.41.1 \
  && source /root/.cargo/env \
  && mkdir -p /srv/explorer/electrs{,_liquid} \
- && git clone --no-checkout https://github.com/blockstream/electrs.git \
+ && git clone --no-checkout https://github.com/Groestlcoin/electrs.git \
  && cd electrs \
  && git checkout 49cf7a7dffe8dccb3d4c5cb543aa05878abf086b \
  && cp contrib/popular-scripts.txt /srv/explorer \
  && cargo install --root /srv/explorer/electrs_bitcoin --path . \
- && cargo install --root /srv/explorer/electrs_liquid --path . --features "liquid" \
  && cd .. \
  && rm -fr /root/.cargo electrs \
  && strip /srv/explorer/electrs_*/bin/electrs

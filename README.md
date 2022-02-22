@@ -1,23 +1,21 @@
 # Groestlcoin Esplora Block Explorer
 
-[![build status](https://api.travis-ci.org/Blockstream/esplora.svg)](https://travis-ci.org/Blockstream/esplora)
 [![docker release](https://img.shields.io/docker/pulls/Groestlcoin/esplora.svg)](https://hub.docker.com/r/Groestlcoin/esplora)
 [![MIT license](https://img.shields.io/github/license/Groestlcoin/esplora.svg)](https://github.com/Groestlcoin/esplora/blob/master/LICENSE)
 [![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![IRC](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](https://webchat.freenode.net/?channels=bitcoin-explorers)
 
-Block explorer web interface based on the [esplora-electrs-grs](https://github.com/Groestlcoin/electrs) HTTP API (see blockstream branch).
+Block explorer web interface based on the [electrs](https://github.com/Groestlcoin/electrs) HTTP API (see blockstream branch).
 
 Written as a single-page app in a reactive and functional style using
 [rxjs](https://github.com/ReactiveX/rxjs) and [cycle.js](https://cycle.js.org/).
 
-See live at [Blockstream.info](https://explora.groestlcoin.org/).
+See live at [esplora.groestlcoin.org](https://esplora.groestlcoin.org/).
 
 API documentation [is available here](API.md).
 
 Join the translation efforts on [Transifex](https://transifex.com/blockstream/esplora/).
 
-![Esplora](https://raw.githubusercontent.com/Blockstream/esplora/master/flavors/blockstream/www/img/social-sharing.png)
+![Esplora](https://raw.githubusercontent.com/Groestlcoin/esplora/master/flavors/blockstream/www/img/social-sharing.png)
 
 ## Features
 
@@ -39,9 +37,7 @@ Join the translation efforts on [Transifex](https://transifex.com/blockstream/es
 
 - Noscript support
 
-- For Liquid and other Elements-based chains: support for CT, peg-in/out transactions and multi-asset
-
-- Mainnet, Testnet and Elements high performance electrum server
+- Mainnet, Testnet and signet high performance electrum server
 
 ## Developing
 
@@ -50,7 +46,7 @@ To start a development server with live babel/browserify transpilation, run:
 ```bash
 $ git clone https://github.com/Groestlcoin/esplora && cd esplora
 $ npm install
-$ export API_URL=http://localhost:3000/ # or https://blockstream.info/api/ if you don't have a local API server
+$ export API_URL=http://localhost:3000/ # or https://esplora.groestlcoin.org/api/ if you don't have a local API server
 # (see more config options below)
 $ npm run dev-server
 ```
@@ -104,8 +100,8 @@ Elements-only configuration:
 
 - `NATIVE_ASSET_ID` - the ID of the native asset used to pay fees (defaults to `6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`, the asset id for BTC)
 - `BLIND_PREFIX` - the base58 address prefix byte used for confidential addresses (defaults to `12`)
-- `PARENT_CHAIN_EXPLORER_TXOUT` - URL format for linking to transaction outputs on the parent chain, with `{txid}` and `{vout}` as placeholders. Example: `https://blockstream.info/tx/{txid}#output:{vout}`
-- `PARENT_CHAIN_EXPLORER_ADDRESS` - URL format for linking to addresses on parent chain, with `{addr}` replaced by the address. Example: `https://blockstream.info/address/{addr}`
+- `PARENT_CHAIN_EXPLORER_TXOUT` - URL format for linking to transaction outputs on the parent chain, with `{txid}` and `{vout}` as placeholders. Example: `https://esplora.groestlcoin.org/tx/{txid}#output:{vout}`
+- `PARENT_CHAIN_EXPLORER_ADDRESS` - URL format for linking to addresses on parent chain, with `{addr}` replaced by the address. Example: `https://esplora.groestlcoin.org/address/{addr}`
 - `MANDATORY_SEGWIT` - set to `1` to indicate segwit is not an optional feature
 - `ASSET_ISSUANCE` - set to `1` to enable support for issued assets
 - `ASSET_MAP_URL` - url to load json asset map (in the "minimal" format)
