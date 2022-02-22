@@ -1,8 +1,9 @@
 FROM Groestlcoin/esplora-base:latest AS build
 
-FROM debian:buster@sha256:a63d0b2ecbd723da612abf0a8bdb594ee78f18f691d7dc652ac305a490c9b71a
+FROM debian:bullseye@sha256:4d6ab716de467aad58e91b1b720f0badd7478847ec7a18f66027d0f8a329a43c
 
 COPY --from=build /srv/explorer /srv/explorer
+COPY --from=build /srv/wally_wasm /srv/wally_wasm
 COPY --from=build /root/.nvm /root/.nvm
 
 RUN apt-get -yqq update \
@@ -27,14 +28,33 @@ RUN source /root/.nvm/nvm.sh \
     npm run dist -- bitcoin-mainnet \
  && DEST=/srv/explorer/static/bitcoin-testnet \
     npm run dist -- bitcoin-testnet \
+ && DEST=/srv/explorer/static/bitcoin-signet \
+    npm run dist -- bitcoin-signet \
+ && DEST=/srv/explorer/static/bitcoin-regtest \
+    npm run dist -- bitcoin-regtest \
  && DEST=/srv/explorer/static/liquid-mainnet \
     npm run dist -- liquid-mainnet \
+ && DEST=/srv/explorer/static/liquid-testnet \
+    npm run dist -- liquid-testnet \
+ && DEST=/srv/explorer/static/liquid-regtest \
+    npm run dist -- liquid-regtest \
  && DEST=/srv/explorer/static/bitcoin-mainnet-blockstream \
     npm run dist -- bitcoin-mainnet blockstream \
  && DEST=/srv/explorer/static/bitcoin-testnet-blockstream \
     npm run dist -- bitcoin-testnet blockstream \
+ && DEST=/srv/explorer/static/bitcoin-signet-blockstream \
+    npm run dist -- bitcoin-signet blockstream \
+ && DEST=/srv/explorer/static/bitcoin-regtest-blockstream \
+    npm run dist -- bitcoin-regtest blockstream \
  && DEST=/srv/explorer/static/liquid-mainnet-blockstream \
-    npm run dist -- liquid-mainnet blockstream
+    npm run dist -- liquid-mainnet blockstream \
+ && DEST=/srv/explorer/static/liquid-testnet-blockstream \
+    npm run dist -- liquid-testnet blockstream \
+ && DEST=/srv/explorer/static/liquid-regtest-blockstream \
+    npm run dist -- liquid-regtest blockstream
+
+# symlink the libwally wasm files into liquid's www directories (for client-side unblinding)
+RUN for dir in /srv/explorer/static/liquid*; do ln -s /srv/wally_wasm $dir/libwally; done
 
 # configuration
 RUN cp /srv/explorer/source/run.sh /srv/explorer/

@@ -53,6 +53,8 @@ $ npm run dev-server
 
 The server will be available at http://localhost:5000/
 
+To display debugging information for the Rx streams in the web developer console, set `localStorage.debug = '*'` and refresh.
+
 ## Building
 
 To build the static assets directory for production deployment, set config options (see below)
@@ -94,16 +96,18 @@ All options are optional.
 - `FOOT_HTML` - custom html to inject at the end of `<body>`
 - `CUSTOM_ASSETS` - space separated list of static assets to add to the build
 - `CUSTOM_CSS` - space separated list of css files to append into `style.css`
-- `NOSCRIPT_REDIR` - redirect noscript users to `{request_path}?nojs` (should be captured server-side and redirected to the prerender server, also see `PRERENDER_URL` in dev server options)
+- `NOSCRIPT_REDIR` - redirect noscript users to `{request_path}?nojs` (should be captured server-side and redirected to the prerender server, also see `NOSCRIPT_REDIR_BASE` in dev server options)
+
+Note that `API_URL` should be set to the publicly-reachable URL where the user's browser can issue requests at.
+(that is, *not* via `localhost`, unless you're setting up a dev environment where the browser is running on the same machine as the API server.)
 
 Elements-only configuration:
 
+- `IS_ELEMENTS` - set to `1` to indicate this is an Elements-based chain (enables asset issuance and peg features)
 - `NATIVE_ASSET_ID` - the ID of the native asset used to pay fees (defaults to `6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d`, the asset id for BTC)
 - `BLIND_PREFIX` - the base58 address prefix byte used for confidential addresses (defaults to `12`)
 - `PARENT_CHAIN_EXPLORER_TXOUT` - URL format for linking to transaction outputs on the parent chain, with `{txid}` and `{vout}` as placeholders. Example: `https://esplora.groestlcoin.org/tx/{txid}#output:{vout}`
 - `PARENT_CHAIN_EXPLORER_ADDRESS` - URL format for linking to addresses on parent chain, with `{addr}` replaced by the address. Example: `https://esplora.groestlcoin.org/address/{addr}`
-- `MANDATORY_SEGWIT` - set to `1` to indicate segwit is not an optional feature
-- `ASSET_ISSUANCE` - set to `1` to enable support for issued assets
 - `ASSET_MAP_URL` - url to load json asset map (in the "minimal" format)
 
 Menu configuration (useful for inter-linking multiple instances on different networks):
@@ -117,13 +121,17 @@ All GUI options, plus:
 
 - `PORT` - port to bind http development server (defaults to `5000`)
 - `CORS_ALLOW` - value to set for `Access-Control-Allow-Origin` header (optional)
-- `PRERENDER_URL` - base url for prerender server, for redirecting `?nojs` requests (should be set alongside `NOSCRIPT_REDIR`)
+- `NOSCRIPT_REDIR_BASE` - base url for prerender server, for redirecting `?nojs` requests (should be set alongside `NOSCRIPT_REDIR`)
 
 ### Pre-rendering server options
 
 All GUI options, plus:
 
 - `PORT` - port to bind pre-rendering server (defaults to `5001`)
+
+Note that unlike the regular JavaScript-based app that sends API requests from the client-side,
+the pre-rendering server sends API requests from the server-side. This means that `API_URL` should
+be configured to the URL reachable by the server, typically `http://localhost:3000/`.
 
 ## How to build the Docker image
 
@@ -140,15 +148,6 @@ docker run -p 50001:50001 -p 8080:80 \
            bash -c "/srv/explorer/run.sh bitcoin-mainnet explorer"
 ```
 
-## How to run the explorer for Liquid mainnet
-
-```
-docker run -p 50001:50001 -p 8082:80 \
-           --volume $PWD/data_liquid_mainnet:/data \
-           --rm -i -t esplora \
-           bash -c "/srv/explorer/run.sh liquid-mainnet explorer"
-```
-
 ## How to run the explorer for Groestlcoin testnet3
 
 ```
@@ -158,6 +157,36 @@ docker run -p 50001:50001 -p 8084:80 \
            bash -c "/srv/explorer/run.sh bitcoin-testnet explorer"
 ```
 
+## How to run the explorer for Groestlcoin signet
+
+```
+docker run -p 50001:50001 -p 8084:80 \
+           --volume $PWD/data_bitcoin_signet:/data \
+           --rm -i -t esplora \
+           bash -c "/srv/explorer/run.sh bitcoin-signet explorer"
+```
+
+## How to run the explorer for Groestlcoin regtest
+
+```
+docker run -p 50001:50001 -p 8094:80 \
+           --volume $PWD/data_bitcoin_regtest:/data \
+           --rm -i -t esplora \
+           bash -c "/srv/explorer/run.sh bitcoin-regtest explorer"
+```
+
+## Docker config options
+
+Set `-e DEBUG=verbose` to enable more verbose logging.
+
+Set `-e NO_PRECACHE=1` to disable pre-caching of statistics for "popular addresses",
+which may take a long time and is not necessary for personal use.
+
+Set `-e NO_ADDRESS_SEARCH=1` to disable the [by-prefix address search](https://github.com/Blockstream/esplora/blob/master/API.md#get-address-prefixprefix) index.
+
+Set `-e ENABLE_LIGHTMODE=1` to enable [esplora-electrs's light mode](https://github.com/Blockstream/electrs/#light-mode).
+
+Set `-e ONION_URL=http://xyz.onion` to enable the `Onion-Location` header.
 
 ## Build new esplora-base
 
@@ -167,20 +196,34 @@ docker push Groestlcoin/esplora-base:latest
 docker inspect --format='{{index .RepoDigests 0}}' Groestlcoin/esplora-base
 ```
 
-## Build new ci
+## Build new tor (or you can pull directly from Docker Hub - `blockstream/tor:latest`)
 
 ```
-docker build --squash -t blockstream/gcloud-docker:latest -f Dockerfile.ci .
-docker push blockstream/gcloud-docker:latest
-docker inspect --format='{{index .RepoDigests 0}}' blockstream/gcloud-docker
+docker build --squash -t blockstream/tor:latest -f Dockerfile.tor .
+docker push blockstream/tor:latest
+docker inspect --format='{{index .RepoDigests 0}}' blockstream/tor
 ```
+Run: `docker -d --name hidden_service blockstream/tor:latest tor -f /home/tor/torrc` (could add a `-v /extra/torrc:/home/tor/torrc`, if you have a custom torrc)
 
-# Build new gcloud-tor
-
+Example torrc:
 ```
-docker build --squash -t blockstream/gcloud-tor:latest -f Dockerfile.tor .
-docker push blockstream/gcloud-tor:latest
-docker inspect --format='{{index .RepoDigests 0}}' blockstream/gcloud-tor
+DataDirectory /home/tor/tor
+PidFile /var/run/tor/tor.pid
+
+ControlSocket /var/run/tor/control GroupWritable RelaxDirModeCheck
+ControlSocketsGroupWritable 1
+SocksPort unix:/var/run/tor/socks WorldWritable
+SocksPort 9050
+
+CookieAuthentication 1
+CookieAuthFileGroupReadable 1
+CookieAuthFile /var/run/tor/control.authcookie
+
+Log [handshake]debug [*]notice stderr
+
+HiddenServiceDir /home/tor/tor/hidden_service_v3/
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:80
 ```
 
 ## License

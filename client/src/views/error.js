@@ -9,10 +9,8 @@ const formatError = err =>
 : err.toString()
 
 export const error = ({ t, error, ...S }) => layout(<div>
-  <div className="jumbotron jumbotron-fluid">
-    <div className="container"><h1>{ t(formatError(error)) }</h1></div>
+    <div className="container text-center"><h1>{ t(formatError(error)) }</h1></div>
   </div>
-</div>
 , { t, ...S })
 
 export const notFound = S => error({ ...S, error: 'Page Not Found' })

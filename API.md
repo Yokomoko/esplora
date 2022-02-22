@@ -1,6 +1,18 @@
 # Esplora HTTP API
 
-JSON over RESTful HTTP. Amounts are always represented in satoshis.
+JSON over RESTful HTTP. Amounts are always represented in gros.
+
+The Groestlcoin public APIs are available at:
+- Groestlcoin: https://esplora.groestlcoin.org/api/
+- Groestlcoin Testnet: https://esplora-test.groestlcoin.org/api/
+- Groestlcoin Signet: https://esplora-signet.groestlcoin.org/api/
+
+For example:
+```bash
+$ curl https://esplora.groestlcoin.org/api/blocks/tip/hash
+```
+
+You can also [self-host the Esplora API server](https://github.com/Groestlcoin/esplora#how-to-run-the-explorer-for-bitcoin-mainnet), which provides better privacy and security.
 
 ## Transactions
 
@@ -18,16 +30,22 @@ Returns the transaction confirmation status.
 Available fields: `confirmed` (boolean), `block_height` (optional) and `block_hash` (optional).
 
 ### `GET /tx/:txid/hex`
+### `GET /tx/:txid/raw`
 
-Returns the raw transaction in hex.
+Returns the raw transaction in hex or as binary data.
+
+### `GET /tx/:txid/merkleblock-proof`
+
+Returns a merkle inclusion proof for the transaction using
+[groestlcoind's merkleblock](https://bitcoin.org/en/glossary/merkle-block) format.
+
+*Note:* This endpoint is not currently available for Liquid/Elements-based chains.
 
 ### `GET /tx/:txid/merkle-proof`
 
-Returns a merkle inclusion proof for the transaction.
-
-Currently matches the merkle proof format used by Electrum's
-[`blockchain.transaction.get_merkle`](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle).
-*Will eventually be changed to use groestlcoind's `merkleblock` format instead.*
+Returns a merkle inclusion proof for the transaction using
+[Electrum's `blockchain.transaction.get_merkle`](https://electrumx.readthedocs.io/en/latest/protocol-methods.html#blockchain-transaction-get-merkle)
+format.
 
 ### `GET /tx/:txid/outspend/:vout`
 
@@ -87,7 +105,14 @@ Returns up to 50 transactions (no paging).
 Get the list of unspent transaction outputs associated with the address/scripthash.
 
 Available fields: `txid`, `vout`, `value` and `status` (with the status of the funding tx).
-Elements-based chains have an additional `asset` field.
+
+Elements-based chains have a `valuecommitment` field that may appear in place of `value`, plus the following additional fields: `asset`/`assetcommitment`, `nonce`/`noncecommitment`, `surjection_proof` and `range_proof`.
+
+### `GET /address-prefix/:prefix`
+
+Search for addresses beginning with `:prefix`.
+
+Returns a JSON array with up to 10 results.
 
 ## Blocks
 
@@ -95,9 +120,15 @@ Elements-based chains have an additional `asset` field.
 
 Returns information about a block.
 
-Available fields: `id`, `height`, `version`, `timestamp`, `bits`, `nonce`, `merkle_root`, `tx_count`, `size`, `weight` and `previousblockhash`.
+Available fields: `id`, `height`, `version`, `timestamp`, `mediantime`, `bits`, `nonce`, `merkle_root`, `tx_count`, `size`, `weight`, and `previousblockhash`.
 Elements-based chains have an additional `proof` field.
 See [block format](#block-format) for more details.
+
+The response from this endpoint can be cached indefinitely.
+
+### `GET /block/:hash/header`
+
+Returns the hex-encoded block header.
 
 The response from this endpoint can be cached indefinitely.
 
@@ -124,6 +155,12 @@ The response from this endpoint can be cached indefinitely.
 ### `GET /block/:hash/txid/:index`
 
 Returns the transaction at index `:index` within the specified block.
+
+The response from this endpoint can be cached indefinitely.
+
+### `GET /block/:hash/raw`
+
+Returns the raw block representation in binary.
 
 The response from this endpoint can be cached indefinitely.
 
@@ -195,15 +232,29 @@ Each transaction object contains simplified overview data, with the following fi
 Get an object where the key is the confirmation target (in number of blocks)
 and the value is the estimated feerate (in gro/vB).
 
-The available confirmation targets are 2, 3, 4, 5, 6, 10, 20, 25, 144, 504 and 1008 blocks.
+The available confirmation targets are 1-25, 144, 504 and 1008 blocks.
 
-For example: `{ "2": 87.882, "3": 87.882, "4": 87.882, "5": 81.129, "6": 68.285, "10": 1.027, "20": 1.027, "25": 1.027, "144": 1.027, "504": 1.027, "1008": 1.027 }`
+For example: `{ "1": 87.882, "2": 87.882, "3": 87.882, "4": 87.882, "5": 81.129, "6": 68.285, ..., "144": 1.027, "504": 1.027, "1008": 1.027 }`
 
-## Issued assets (Elements/Liquid only)
+## Assets (Elements/Liquid only)
 
 ### `GET /asset/:asset_id`
 
-Get information about an issued asset. Returns an object with:
+Get information about an asset.
+
+For the network's native asset (i.e. L-BTC in Liquid), returns an object with:
+
+- `asset_id`
+- `chain_stats` and `mempool_stats`, each with:
+  - `tx_count`
+  - `peg_in_count`
+  - `peg_in_amount`
+  - `peg_out_amount`
+  - `peg_out_count`
+  - `burn_count`
+  - `burned_amount`
+
+For user-issued assets, returns an object with:
 
 - `asset_id`
 - `issuance_txin`: the issuance transaction input
@@ -215,7 +266,7 @@ Get information about an issued asset. Returns an object with:
 - `status`: the confirmation status of the initial asset issuance transaction
 - `contract_hash`: the contract hash committed as the issuance entropy
 - `reissuance_token`: the asset id of the reissuance token
-- `chain_stats` and `mempool_stats`
+- `chain_stats` and `mempool_stats`, each with:
   - `tx_count`: the number of transactions associated with this asset (does not include confidential transactions)
   - `issuance_count`: the number of (re)issuance transactions
   - `issued_amount`: the total known amount issued (should be considered a minimum bound when `has_blinded_issuances` is true)
@@ -232,19 +283,72 @@ If the asset is available on the registry, the following fields are returned as 
 - `precision`: the number of decimal places for units of this asset (defaults to 0)
 - `name`: a description for the asset (up to 255 characters)
 
-Example:
+Example native asset:
 
 ```
-{"asset_id":"4d4354944366ea1e33f27c37fec97504025d6062c551208f68597d1ed40ec53e","contract":{"entity":{"domain":"magicalcryptofriends.com"},"issuer_pubkey":"02d2b29fe8ffef6acb5e75d0cd7f9c55d502bd876434b87c39ae209fc57c57f52a","name":"Magical Crypto Token","nonce":"13158145","precision":0,"ticker":"MCT","version":0},"issuance_txin":{"txid":"d535ded7ce07a0bb9c61d0fefff8127da3fc4833302b05e2b8a0cf9e04446af1","vin":0},"issuance_prevout":{"txid":"839e819d74ac98110fce63a3dab3a1075bbddcad811e0e125641989581919ab0","vout":1},"name":"Magical Crypto Token","ticker":"MCT","precision":0,"entity":{"domain":"magicalcryptofriends.com"}}
+{
+  "asset_id": "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d",
+  "chain_stats": {"tx_count": 54, "peg_in_count": 2, "peg_in_amount": 1600000000, "peg_out_count": 51, "peg_out_amount": 250490000, "burn_count":0, "burned_amount": 0 },
+  "mempool_stats": {"tx_count": 3, "peg_in_count": 0, "peg_in_amount": 0, "peg_out_count": 3, "peg_out_amount": 70020000, "burn_count": 0, "burned_amount": 0 }
+}
+```
+
+Example user-issued asset:
+
+```
+{
+  "asset_id": "d8a317ce2c14241192cbb3ebdb9696250ca1251a58ba6251c29fcfe126c9ca1f",
+  "issuance_txin":{ "txid": "39affca34bd51ed080f89f1e7a5c7a49d6d9e4779c84424ae50df67dd60dcaf7", "vin": 0},
+  "issuance_prevout": { "txid": "0cdd74c540af637d5a3874ce8500891fd8e94ec8e3d5d436d86e87b6759a7674", "vout": 0 },
+  "reissuance_token": "eb8b210d42566699796dbf78649120fd5c9d9b04cabc8f480856e04bd5e9fc22",
+  "contract_hash": "025d983cc774da665f412ccc6ccf51cb017671c2cb0d3c32d10d50ffdf0a57de",
+  "status": { "confirmed": true, "block_height": 105, "block_hash": "7bf84f2aea30b02981a220943f543a6d6e7ac646d59ef76cff27dca8d27b2b67", "block_time": 1586248729 },
+  "chain_stats": { "tx_count": 1, "issuance_count": 1, "issued_amount": 0, "burned_amount": 0, "has_blinded_issuances": true, "reissuance_tokens": 0, "burned_reissuance_tokens": 0 },
+  "mempool_stats": { "tx_count": 0, "issuance_count": 0, "issued_amount": 0, "burned_amount": 0, "has_blinded_issuances": false, "reissuance_tokens": null, "burned_reissuance_tokens": 0 }
+}
 ```
 
 ### `GET /asset/:asset_id/txs`
 ### `GET /asset/:asset_id/txs/mempool`
 ### `GET /asset/:asset_id/txs/chain[/:last_seen]`
 
-Returns the list of (re)issuance and burn transactions associated with this asset id.
+Get transactions associated with the specified asset.
+
+For the network's native asset, returns a list of peg in, peg out and burn transactions.
+
+For user-issued assets, returns a list of issuance, reissuance and burn transactions.
 
 Does not include regular transactions transferring this asset.
+
+### `GET /asset/:asset_id/supply`
+### `GET /asset/:asset_id/supply/decimal`
+
+Get the current total supply of the specified asset.
+
+For the native asset (L-BTC), this is calculated as `{chain,mempool}_stats.peg_in_amount - {chain,mempool}_stats.peg_out_amount - {chain,mempool}_stats.burned_amount`.
+
+For issued assets, this is calculated as `{chain,mempool}_stats.issued_amount - {chain,mempool}_stats.burned_amount`.
+
+Not available for assets with blinded issuances.
+
+If `/decimal` is specified, returns the supply as a decimal according to the asset's divisibility.
+Otherwise, returned in base units.
+
+### `GET /assets/registry`
+
+Get the list of issued assets in the asset registry.
+
+Query string parameters:
+
+- `start_index`: the start index to use for paging. defaults to 0.
+- `limit`: maximum number of assets to return. defaults to 25, maximum 100.
+- `sort_field`: field to sort assets by. one of `name`, `ticker` or `domain`. defaults to `ticker`.
+- `sort_dir`: sorting direction. one of `asc` or `desc`. defaults to `asc`.
+
+Assets are returned in the same format as in `GET /asset/:asset_id`.
+
+
+The total number of results will be returned as the `x-total-results` header.
 
 ## Transaction format
 
@@ -304,11 +408,13 @@ Does not include regular transactions transferring this asset.
 - `timestamp`
 - `bits`
 - `nonce`
+- `difficulty`
 - `merkle_root`
 - `tx_count`
 - `size`
 - `weight`
 - `previousblockhash`
+- `mediantime` (median time-past)
 - *(Elements only)*
 - `proof`
   - `challenge`

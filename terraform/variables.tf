@@ -5,6 +5,7 @@ locals {
       create_bitcoin_mainnet = 0
       create_bitcoin_testnet = 0
       create_liquid_mainnet  = 0
+      create_liquid_testnet  = 0
     }
 
     "bitcoin-mainnet" = {
@@ -12,6 +13,7 @@ locals {
       create_bitcoin_mainnet = 1
       create_bitcoin_testnet = 0
       create_liquid_mainnet  = 0
+      create_liquid_testnet  = 0
     }
 
     "bitcoin-testnet" = {
@@ -19,6 +21,7 @@ locals {
       create_bitcoin_mainnet = 0
       create_bitcoin_testnet = 1
       create_liquid_mainnet  = 0
+      create_liquid_testnet  = 0
     }
 
     "liquid-mainnet" = {
@@ -26,6 +29,15 @@ locals {
       create_bitcoin_mainnet = 0
       create_bitcoin_testnet = 0
       create_liquid_mainnet  = 1
+      create_liquid_testnet  = 0
+    }
+
+    "liquid-testnet" = {
+      create_main            = 0
+      create_bitcoin_mainnet = 0
+      create_bitcoin_testnet = 0
+      create_liquid_mainnet  = 0
+      create_liquid_testnet  = 1
     }
   }
 
@@ -33,6 +45,7 @@ locals {
   create_bitcoin_mainnet = lookup(local.context_variables[terraform.workspace], "create_bitcoin_mainnet")
   create_bitcoin_testnet = lookup(local.context_variables[terraform.workspace], "create_bitcoin_testnet")
   create_liquid_mainnet  = lookup(local.context_variables[terraform.workspace], "create_liquid_mainnet")
+  create_liquid_testnet  = lookup(local.context_variables[terraform.workspace], "create_liquid_testnet")
 }
 
 variable "project" {
@@ -55,39 +68,44 @@ variable "cluster_size" {
   default = "overwritten_by_ci"
 }
 
+variable "preemptible_cluster_size" {
+  type    = string
+  default = "overwritten_by_ci"
+}
+
 # lists overwritten by ci
 variable "regions" {
-  type    = list
+  type    = list(any)
   default = [""]
 }
 
 variable "ssl_certs" {
-  type    = list
+  type    = list(any)
   default = []
 }
 
 variable "zones" {
-  type    = list
+  type    = list(any)
   default = [""]
 }
 
 variable "instance_type" {
-  type    = list
+  type    = list(any)
   default = ["", "", "", ""]
 }
 
 variable "preemptible_instance_type" {
-  type    = list
+  type    = list(any)
   default = ["", "", "", ""]
 }
 
 variable "hosts" {
-  type    = list
+  type    = list(any)
   default = [""]
 }
 
 variable "hosts_onion" {
-  type    = list
+  type    = list(any)
   default = ["", ""]
 }
 
@@ -103,9 +121,15 @@ variable "docker_tag_nginx" {
 variable "docker_tag_node_exporter" {
   type = string
 
-  # docker inspect --format='{{index .RepoDigests 0}}' prom/node-exporter:v0.16.0
+  # docker inspect --format='{{index .RepoDigests 0}}' prom/node-exporter:v1.2.2
+  default = "prom/node-exporter@sha256:a990408ed288669bbad5b5b374fe1584e54825cde4a911c1a3d6301a907a030c"
+}
 
-  default = "prom/node-exporter@sha256:b630fb29d99b3483c73a2a7db5fc01a967392a3d7ad754c8eccf9f4a67e7ee31"
+variable "docker_tag_process_exporter" {
+  type = string
+
+  # docker inspect --format='{{index .RepoDigests 0}}' ncabatoff/process-exporter:0.7.4
+  default = "ncabatoff/process-exporter@sha256:80f89e0c882cb3bba2fa577e090198bc60127b40e52c65443a657637fc24b0bd"
 }
 
 variable "docker_tag_explorer" {
@@ -115,12 +139,14 @@ variable "docker_tag_explorer" {
 
 variable "docker_tag_tor" {
   type    = string
-  default = "blockstream/tor@sha256:4f99eddb24fb779cc25b43ec0cc1a7a92341b4b9e3d1b02826d0e2ab67360c7f"
+  default = "blockstream/tor@sha256:378aa7ee44452617ba46369e7e27cc89c2704b9d53442cf016543a24e46f984a"
 }
 
 variable "docker_tag_prometheus" {
-  type    = string
-  default = "blockstream/prometheus@sha256:a4803e2732f6b4b47f425ef9bceeb7942865a4d5ceef4d8e3ee9c7db8363a3d3"
+  type = string
+
+  # docker inspect --format='{{index .RepoDigests 0}}' prom/prometheus:v2.29.1
+  default = "prom/prometheus@sha256:ccc801f38fdac43f0ed3e1b0220777e976828d6558f8ef3baad9028e0d1797ae"
 }
 
 variable "min_ready_sec" {
@@ -136,12 +162,9 @@ variable "initial_delay_sec" {
 }
 
 variable "prometheus_allowed_source_ip" {
-  description = "The IP that is allowed to access the prometheus instance."
-  default     = ""
-}
-
-variable "opsgenie_api_key" {
-  default = ""
+  type        = list(any)
+  description = "The IPs that are allowed to access the prometheus instance."
+  default     = []
 }
 
 variable "kms_location" {

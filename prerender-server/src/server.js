@@ -1,3 +1,4 @@
+import fs from 'fs'
 import pug from 'pug'
 import path from 'path'
 import express from 'express'
@@ -39,7 +40,10 @@ app.use((req, res, next) => {
   render(req._parsedUrl.pathname, req._parsedUrl.query || '', req.body, { theme, lang }, (err, resp) => {
     if (err) return next(err)
     if (resp.redirect) return res.redirect(301, baseHref + resp.redirect.substr(1))
-    if (resp.errorCode) return res.sendStatus(resp.errorCode)
+    if (resp.errorCode) {
+      console.error(`Failed with code ${resp.errorCode}:`, resp)
+      return res.sendStatus(resp.errorCode)
+    }
 
     res.status(resp.status || 200)
     res.render(indexView, {
@@ -54,6 +58,17 @@ app.use((req, res, next) => {
 
 })
 
-app.listen(process.env.PORT || 5001, function(){
-  console.log(`HTTP server running on ${this.address().address}:${this.address().port}`)
+// Cleanup socket file from previous executions
+if (process.env.SOCKET_PATH) {
+  try {
+    if (fs.statSync(process.env.SOCKET_PATH).isSocket()) {
+      fs.unlinkSync(process.env.SOCKET_PATH)
+    }
+  } catch (_) {}
+}
+
+app.listen(process.env.SOCKET_PATH || process.env.PORT || 5001, function(){
+  let addr = this.address()
+  if (addr.address) addr = `${addr.address}:${addr.port}`
+  console.log(`HTTP server running on ${addr}`)
 })

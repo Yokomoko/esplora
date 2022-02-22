@@ -31,27 +31,43 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
       , prev_paging_txids = goAddr.last_txids.length ? goAddr.last_txids.slice(0, -1).join(',') : null
       , prev_paging_est_count = goAddr.est_chain_seen_count ? Math.max(goAddr.est_chain_seen_count-perPage, 0) : 0
 
+  const display_addr = addr.display_addr
+      // in elements mode, only show QR codes for confidential addresses
+      , is_confidential = process.env.IS_ELEMENTS && !!goAddr.confidential_addr
+      , show_qr = !process.env.IS_ELEMENTS || is_confidential
+
   return layout(
     <div>
-      <div className="jumbotron jumbotron-fluid addr-page">
+      <div className="addr-page">
         <div className="container">
-          { search({ t, klass: 'page-search-bar' }) }
           <div className="row">
             <div className="col-sm-8">
               <h1>{t`Address`}</h1>
               <div className="block-hash">
-                <span>{addr.address}</span>
+                <span>{display_addr}</span>
                 { process.browser && <div className="code-button">
-                  <div className="code-button-btn" role="button" data-clipboardCopy={addr.address}></div>
+                  <div className="code-button-btn" role="button" data-clipboardCopy={display_addr}></div>
                 </div> }
               </div>
             </div>
-            <div className="col-sm-4"><img className="float-sm-right address-qr-code" src={ addrQR } /></div>
+            {show_qr && <div className="col-sm-4">
+              <img className="float-sm-right address-qr-code" src={ addrQR } />
+            </div>}
           </div>
         </div>
       </div>
       <div className="container">
         <div className="stats-table">
+        { is_confidential && [
+          <div>
+            <div>{ t`Confidential` }</div>
+            <div>{ goAddr.confidential_addr }</div>
+          </div>
+        , <div>
+            <div>{ t`Unconfidential` }</div>
+            <div>{ goAddr.addr }</div>
+          </div>
+        ] }
 
           { (mempool_stats.tx_count > 0 || chain_stats.tx_count == 0) && <div>
             <div>{t`Total tx count`}</div>
@@ -97,7 +113,7 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
         <div>
           <div className="transactions">
             <h3>{txsShownText(total_txs, est_prev_total_seen_count, shown_txs, t)}</h3>
-            { addrTxs ? addrTxs.map(tx => txBox(tx, { openTx, tipHeight, t, spends, ...S }))
+            { addrTxs ? addrTxs.map(tx => txBox(tx, { openTx, tipHeight, t, spends, addr, ...S }))
                        : <img src="img/Loading.gif" className="loading-delay" /> }
           </div>
 

@@ -1,6 +1,5 @@
 import Snabbdom from 'snabbdom-pragma'
 import layout from './layout'
-import search from './search'
 import { txBox } from './tx'
 import { updateQuery } from '../util'
 import { formatTime, formatHex, formatNumber } from './util'
@@ -13,11 +12,10 @@ const makeStatus = b => b && ({ confirmed: true, block_height: b.height, block_h
 
 export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, openBlock, goBlock, tipHeight, loading, page, txsStatus=makeStatus(b), ...S }) => b && layout(
   <div>
-    <div className="jumbotron jumbotron-fluid block-page">
+    <div className="block-page">
       <div className="container">
-        { search({ t, klass: 'page-search-bar' }) }
         <div>
-          <h1 className="block-header-title">{t`Block ${formatNumber(b.height)}`}</h1>
+          <h1 className="block-header-title">{t`Block ${b.height}`}</h1>
           <div className="block-hash"><span>{b.id}</span>
             { process.browser && <div className="code-button">
               <div className="code-button-btn" role="button" data-clipboardCopy={b.id}></div>
@@ -54,7 +52,7 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
       <div className="stats-table">
         <div>
           <div>{t`Height`}</div>
-          <div><a href={`block/${b.id}`}>{formatNumber(b.height)}</a></div>
+          <div><a href={`block/${b.id}`}>{b.height}</a></div>
         </div>
         <div>
           <div>{t`Status`}</div>
@@ -62,7 +60,7 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
         </div>
         <div>
           <div>{t`Timestamp`}</div>
-          <div>{formatTime(b.timestamp, t)}</div>
+          <div>{formatTime(b.timestamp)}</div>
         </div>
         <div>
           <div>{t`Size`}</div>
@@ -96,20 +94,25 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
                 <div className="mono">{formatHex(b.bits)}</div>
               </div>
             , <div>
+                <div>{t`Difficulty`}</div>
+                <div className="mono">{formatNumber(b.difficulty)}</div>
+              </div>
+            , <div>
                 <div>{t`Nonce`}</div>
                 <div className="mono">{formatHex(b.nonce)}</div>
               </div>
             ]
 
           /* Federated chains */
-          : b.proof ? [
+          /* TODO: support for dynafed blocks */
+          : b.ext && b.ext.challenge ? [
               <div>
                 <div>{t`Block Challenge`}</div>
-                <div className="mono">{b.proof.challenge_asm}</div>
+                <div className="mono">{b.ext.challenge}</div>
               </div>
             , <div>
                 <div>{t`Block Solution`}</div>
-                <div className="mono">{b.proof.solution_asm}</div>
+                <div className="mono">{b.ext.solution}</div>
              </div>
             ]
           : null
@@ -132,7 +135,7 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
       </div>
     </div>
   </div>
-, { t, page, ...S })
+, { t, page, activeTab: 'recentBlocks', ...S })
 
 const txsShownText = (total, start, shown, t) =>
   (total > perPage && shown > 0)
