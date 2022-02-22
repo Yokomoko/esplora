@@ -190,7 +190,7 @@ Get mempool backlog statistics. Returns an object with:
 
 - `vsize`: the total size of mempool transactions in virtual bytes
 
-- `total_fee`: the total fee paid by mempool transactions in satoshis
+- `total_fee`: the total fee paid by mempool transactions in gros
 
 - `fee_histogram`: mempool fee-rate distribution histogram
 

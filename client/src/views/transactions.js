@@ -4,7 +4,7 @@ import { formatSat, formatNumber } from './util'
 
 const staticRoot = process.env.STATIC_ROOT || ''
 
-export const transactions = (txs, viewMore, { t } ) => 
+export const transactions = (txs, viewMore, { t } ) =>
     <div className="tx-container">
       { !txs ? <img src="img/Loading.gif" className="loading-delay" />
       : !txs.length ? <p>{t`No recent transactions`}</p>
@@ -22,7 +22,7 @@ export const transactions = (txs, viewMore, { t } ) =>
                   <div className="transactions-table-cell highlighted-text" data-label={t`TXID`}>{txOverview.txid}</div>
                   { txOverview.value != null && <div className="transactions-table-cell" data-label={t`Value`}>{formatSat(txOverview.value)}</div> }
                   <div className="transactions-table-cell" data-label={t`Size`}>{`${formatNumber(txOverview.vsize)} vB`}</div>
-                  <div className="transactions-table-cell" data-label={t`Fee`}>{`${feerate.toFixed(1)} sat/vB`}</div>
+                  <div className="transactions-table-cell" data-label={t`Fee`}>{`${feerate.toFixed(1)} gro/vB`}</div>
                 </a>
               </div>
             )})}
@@ -35,5 +35,3 @@ export const transactions = (txs, viewMore, { t } ) =>
         </div>
       }
     </div>
-
-  

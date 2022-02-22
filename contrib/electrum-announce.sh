@@ -23,11 +23,11 @@ fi
 if [ $network == "mainnet" ]; then
   default_tcp_port=50001
   default_ssl_port=50002
-  genesis_hash=000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+  genesis_hash=00000ac5927c594d49cc0bdb81759d0da8297eb614683d3acb62f0703b639023
 else
   default_tcp_port=51001
   default_ssl_port=51002
-  genesis_hash=000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943
+  genesis_hash=000000ffbb50fc9898cdd36ec163e6ba23230164c0052a28876255b7dcf2cd36
 fi
 
 features='{"hosts":'$hosts',"server_version":"'$server_version'","genesis_hash":"'$genesis_hash'","protocol_min":"1.4","protocol_max":"1.4","hash_function":"sha256","pruning":null}'

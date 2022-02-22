@@ -92,7 +92,7 @@ a, a:link, a:visited, a:hover, a:focus {
 }
 
 .main-nav li.active a{
-  border: 1px solid #ffbb00;
+  border: 1px solid #00c3ff;
 }
 
 
@@ -2294,7 +2294,7 @@ dl.mempool-histogram .bar:before {
 }
 
 .sub-nav .active {
-  border-bottom: solid 2px #ffbb00;
+  border-bottom: solid 2px #00c3ff;
   color: #ffffff;
 }
 
